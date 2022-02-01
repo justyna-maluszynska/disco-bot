@@ -1,3 +1,4 @@
+from ast import alias
 from discord.ext import commands
 import youtube_dl
 import discord
@@ -33,3 +34,11 @@ class Music(commands.Cog):
             url2 = info['formats'][0]['url']
             source = await discord.FFmpegOpusAudio.from_probe(url2)
             voice_client.play(source)
+
+    @commands.command(aliases=['s'])
+    async def pause(self, ctx):
+        ctx.voice_client.pause()
+
+    @commands.command(aliases=['r'])
+    async def resume(self, ctx):
+        ctx.voice_client.resume()
