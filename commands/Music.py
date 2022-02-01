@@ -11,6 +11,15 @@ class MusicPlayer(commands.Cog):
         self.bot = bot
         self._queue = queue.Queue()
 
+    async def play_next_song(self, ctx):
+        ctx.voice_client.stop()
+        song = self._queue.get()
+        await self.play_song(ctx, song)
+
+    async def play_song(self, ctx, song):
+        ctx.voice_client.play(
+            song, after=lambda _: self.bot.loop.create_task(self.play_next_song(ctx)))
+
     @commands.command()
     async def join(self, ctx: commands.Context):
         if ctx.author.voice is None:
@@ -43,16 +52,16 @@ class MusicPlayer(commands.Cog):
             source = await discord.FFmpegOpusAudio.from_probe(url, **FFMPEG_OPTIONS)
             self._queue.put(source)
 
-        def play_song():
-            song = self._queue.get()
-            ctx.voice_client.play(song, after=lambda _: play_song())
+        # def play_song():
+        #     song = self._queue.get()
+        #     ctx.voice_client.play(song, after=lambda _: play_song())
 
         with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
             info = ydl.extract_info(arg, download=False)
             await load_audio(info)
 
         if not ctx.voice_client.is_playing():
-            await play_song()
+            await self.play_next_song(ctx)
 
     @commands.command(aliases=['s'])
     async def pause(self, ctx: commands.Context):
@@ -61,3 +70,7 @@ class MusicPlayer(commands.Cog):
     @commands.command(aliases=['r'])
     async def resume(self, ctx: commands.Context):
         ctx.voice_client.resume()
+
+    @commands.command(aliases=['fs'])
+    async def skip(self, ctx: commands.Context):
+        ctx.voice_client.stop()
