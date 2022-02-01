@@ -4,7 +4,7 @@ import youtube_dl
 import discord
 
 
-class Music(commands.Cog):
+class MusicPlayer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
