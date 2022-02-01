@@ -1,5 +1,3 @@
-from ast import alias
-import asyncio
 from discord.ext import commands
 import youtube_dl
 import discord
@@ -17,13 +15,24 @@ class MusicPlayer(commands.Cog):
         await self.play_song(ctx, song)
 
     async def play_song(self, ctx, song):
+        embed = discord.Embed(
+            title="", description=f"[{song['title']}]({song['url']})", color=0xff8040)
+        embed.set_author(name="Radiożyd playing",
+                         icon_url="https://cdn-icons-png.flaticon.com/512/609/609982.png")
+        embed.add_field(name="Author", value=song['artist'], inline=True)
+        embed.add_field(name="Duration", value=song['duration'], inline=True)
+        embed.set_thumbnail(url=song['thumbnail'])
+        embed.add_field(name="Requested by", value=ctx.author.mention)
+        await ctx.send(embed=embed)
+
         ctx.voice_client.play(
-            song, after=lambda _: self.bot.loop.create_task(self.play_next_song(ctx)))
+            song['source'], after=lambda _: self.bot.loop.create_task(self.play_next_song(ctx)))
 
     @commands.command()
     async def join(self, ctx: commands.Context):
         if ctx.author.voice is None:
             await ctx.send('Spierdalaj murzynie.')
+
         voice_channel = ctx.author.voice.channel
         if ctx.voice_client is None:
             await voice_channel.connect()
@@ -50,11 +59,21 @@ class MusicPlayer(commands.Cog):
             }
 
             source = await discord.FFmpegOpusAudio.from_probe(url, **FFMPEG_OPTIONS)
-            self._queue.put(source)
+            
+            embed = discord.Embed(
+                title="", description=f"[{info['title']}]({info['url']})", color=0x0080c0)
+            embed.set_author(name="Added to queue",
+                             icon_url="https://cdn-icons-png.flaticon.com/512/609/609982.png")
+            embed.add_field(name="Author", value=info['artist'], inline=True)
+            embed.add_field(name="Duration",
+                            value=info['duration'], inline=True)
+            embed.add_field(name="Position in queue",
+                            value=self._queue.qsize()+1, inline=True)
+            embed.set_thumbnail(url=info['thumbnail'])
+            await ctx.send(embed=embed)
 
-        # def play_song():
-        #     song = self._queue.get()
-        #     ctx.voice_client.play(song, after=lambda _: play_song())
+            self._queue.put(
+                {'source': source, 'title': info['title'], 'artist': info['uploader'], 'duration': info['duration'], 'thumbnail': info['thumbnail'], 'url': url})
 
         with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
             info = ydl.extract_info(arg, download=False)
