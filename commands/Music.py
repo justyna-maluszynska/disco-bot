@@ -5,11 +5,13 @@ from gtts import gTTS
 
 from config.config import ICON_URL
 from utils.Video import Video
+from utils.Spotify import Spotify
 
 
 class MusicPlayer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.spotify = Spotify()
         self._queue = queue.Queue()
 
     async def _play_next_song(self, ctx):
@@ -69,25 +71,31 @@ class MusicPlayer(commands.Cog):
         await ctx.voice_client.disconnect()
 
     @commands.command(aliases=["p"])
-    async def play(self, ctx: commands.Context, *, arg):
-        print("zareagował")
+    async def play(self, ctx: commands.Context, *, url):
+
         if not ctx.voice_client:
             await ctx.invoke(self.join)
 
         if ctx.author.voice is not None:
 
-            async def load_audio(video: Video):
-                if self._queue.qsize() > 0:
+            async def load_audio(video: Video, silent):
+                if not silent:
                     await ctx.send(
                         embed=video.embed_added_to_queue(self._queue.qsize() + 1)
                     )
                 self._queue.put(video)
 
-            info = Video(arg)
-            await load_audio(info)
+                if not ctx.voice_client.is_playing():
+                    await self._play_next_song(ctx)
 
-            if not ctx.voice_client.is_playing():
-                await self._play_next_song(ctx)
+            if "open.spotify.com/playlist" in url:
+                tracks = self.spotify.get_playlist_items_title(url=url)
+                for track in tracks:
+                    info = Video(track)
+                    await load_audio(info, True)
+            else:
+                info = Video(url)
+                await load_audio(info, False)
 
     @commands.command(aliases=["s"])
     async def pause(self, ctx: commands.Context):
