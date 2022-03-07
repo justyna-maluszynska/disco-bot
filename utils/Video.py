@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import youtube_dl
 import discord
@@ -43,7 +42,7 @@ class Video:
             name="Radiożyd playing",
             icon_url="https://cdn-icons-png.flaticon.com/512/609/609982.png",
         )
-        embed.add_field(name="Author", value=self.author, inline=True)
+        # embed.add_field(name="Author", value=self.author, inline=True)
         embed.add_field(name="Duration", value=self.duration, inline=True)
         embed.set_thumbnail(url=self.thumbnail)
         embed.add_field(name="Requested by", value=ctx.author.mention)
@@ -57,7 +56,7 @@ class Video:
             color=0x0080C0,
         )
         embed.set_author(name="Added to queue", icon_url=ICON_URL)
-        embed.add_field(name="Author", value=self.author, inline=True)
+        # embed.add_field(name="Author", value=self.author, inline=True)
         embed.add_field(name="Duration", value=self.duration, inline=True)
         embed.add_field(name="Position in queue", value=position, inline=True)
         embed.set_thumbnail(url=self.thumbnail)

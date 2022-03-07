@@ -1,5 +1,3 @@
-from operator import imod
-from attr import field
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 

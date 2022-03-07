@@ -3,7 +3,6 @@ import discord
 import queue
 from gtts import gTTS
 
-from config.config import ICON_URL
 from utils.Video import Video
 from utils.Spotify import Spotify
 
@@ -35,25 +34,6 @@ class MusicPlayer(commands.Cog):
 
         # TODO delete when song finish or skip
         await ctx.send(embed=song.embed_now_playing(ctx))
-
-        # await message.add_reaction("⏯")
-        # await message.add_reaction("⏭")
-        # await message.add_reaction("🔁")
-
-        # def check(reaction, user):
-        #     return str(reaction.emoji) == "✅"
-
-        # try:
-        #     reaction = await self.bot.on_reaction_add("reaction_add", check=check)
-        #     print(reaction.emoji)
-
-        # except:
-        #     print("wybuchło")
-
-    # @commands.Cog.listener("on_reaction_add")
-    # async def on_reaction_add(self, reaction, user):
-    #     if reaction.emoji == "✅":
-    #         print("hej")
 
     @commands.command()
     async def join(self, ctx: commands.Context):
@@ -108,13 +88,3 @@ class MusicPlayer(commands.Cog):
     @commands.command(aliases=["fs"])
     async def skip(self, ctx: commands.Context):
         ctx.voice_client.stop()
-
-    # @commands.command()
-    # async def tts(self, ctx: commands.Context, text):
-    #     global gTTS
-    #     speech = gTTS(text=text, lang="es-us", slow=False)
-    #     speech.save("audio.mp3")
-
-    #     voice = ctx.voice_client
-
-    #     voice.play(discord.FFmpegPCMAudio("audio.mp3"), after=None)
