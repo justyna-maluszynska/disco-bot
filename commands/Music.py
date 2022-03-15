@@ -38,7 +38,7 @@ class MusicPlayer(commands.Cog):
     @commands.command()
     async def join(self, ctx: commands.Context):
         if ctx.author.voice is None:
-            return await ctx.send("Spierdalaj murzynie.")
+            return await ctx.send("You cannot use command")
 
         voice_channel = ctx.author.voice.channel
         if ctx.voice_client is None:

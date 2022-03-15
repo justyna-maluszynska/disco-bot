@@ -39,7 +39,7 @@ class Video:
             title="", description=f"[{self.title}]({self.url})", color=0xFF8040
         )
         embed.set_author(
-            name="Radiożyd playing",
+            name="Discobot playing",
             icon_url="https://cdn-icons-png.flaticon.com/512/609/609982.png",
         )
         # embed.add_field(name="Author", value=self.author, inline=True)
